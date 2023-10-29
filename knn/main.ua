@@ -37,15 +37,18 @@ TrainTestSplit ← (
 )
 
 # predict
-PredictKNN ← (|2
+PredictKNN ← (
   # create table of distance vectors for all combinations of train input and test input
-  ⊠-∩(⍜⍉(↙-1⧻.)),,
+  ⊠-∩(⍜⍉(↙-1⧻.)) ,,⊙∶∶
 
   # calculate euclidean distances
-  √≑1/+⍘√
+  ⍜⍘√≑1/+
+
+  # bubble the third value on the stack to the top
+  ∶⊙∶⊙⊙∶
 
   # search closest k neighbours in train set
-  ≡(↙3⍏)
+  ∺(↙∶⍏∶)
 
   # lookup train label
   ⊏⊙(∶∩(⊢⇌⍉))
@@ -94,6 +97,6 @@ k ← 3
 ReadCSV @, &fras ⊢↘1 &args
 ParseIris
 TrainTestSplit r
-PredictKNN
+PredictKNN k
 CalcConfusionMatrix
 ShowConfusionMatrix
