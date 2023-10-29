@@ -1,23 +1,15 @@
-# Length of feature vectors
-N ← 4
-
-# Train test split
-r ← 0.8
-
-# Number of Neighbours (Hyperparameter)
-k ← 3
-
 # read csv data
-Sep ← @,
-ReadCSV ← (|1.2
+ReadCSV ← (|2
   # split lines
-  ⊜□ ≠@\n.
+  ⊜□ ≠@\n.∶
 
   # split on separators
-  ≡⊐⊜□≠Sep.
+  ∺(⊐⊜□≠,)∶
+)
 
-  # split between input and output
-  ∩⍉⊃↘↙ N ⍉
+ParseIris ← (
+  # split between numeric and categorical data
+  ∩⍉⊃↘↙ 4 ⍉
 
   # encode labels
   ⍜∶'/⊂⊝⊛.
@@ -35,10 +27,10 @@ ReadCSV ← (|1.2
 # Shuffle and Train/Test Split, after this Xy test Xy train is on top of stack
 TrainTestSplit ← (
   # shuffle
-  ⊏⍏[⍥⚂⧻].
+  ⊏⍏[⍥⚂⧻].∶
 
   # calculate split index
-  ⌈×r⧻.
+  ⌈×⧻,∶
 
   # actual split
   ⊃↘↙
@@ -53,7 +45,7 @@ PredictKNN ← (|2
   √≑1/+⍘√
 
   # search closest k neighbours in train set
-  ≡(↙k⍏)
+  ≡(↙3⍏)
 
   # lookup train label
   ⊏⊙(∶∩(⊢⇌⍉))
@@ -86,15 +78,22 @@ ShowConfusionMatrix ← (|2.0
   ⊙∶/↥∵⧻.∶⊂{""}∶⍜⍉⊂,∵'□$" _"
 
   # format lower label
-  ⍜∶⊙∶⍉/⊐⊂∵(□⊐⍉)≡(□∺⊂⍜∶⊔[⍥@ ]-1⊡0∶⊡1.) ⍉⊟∶⊙.≡□⬚@ ∵⊔∶+1
+  ⍜∶⊙∶⍉/⊐⊂∵(□⊐⍉)≡(□∺⊂⍜∶⊔[⍥@\s] -1 ⍘⊟) ⍉⊟∶⊙.≡□⬚@ ∵⊔∶+1
 
   # format upper label
   ≡&p ⍥⊂2∶/⊂[⍥" "]⧻∶⍉./⊐⊂∵(□⊐⍉)≡(□≡/⊐⊂⍉⊟≡(□/⊂[⍥" "])-∵⧻, ⊡ 0 ∶↘1.) ⍉⊂∵□∶
 )
 
+# Train test split
+r ← 0.8
+
+# Number of Neighbours (Hyperparameter)
+k ← 3
+
 # read input file
-ReadCSV &fras ⊢↘1 &args
-TrainTestSplit
+ReadCSV @, &fras ⊢↘1 &args
+ParseIris
+TrainTestSplit r
 PredictKNN
 CalcConfusionMatrix
 ShowConfusionMatrix
